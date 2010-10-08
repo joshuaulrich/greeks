@@ -1,0 +1,10 @@
+Package: greeks
+Type: Package
+Title: Financial Option Pricing Tools
+Version: 1.0
+Date: 2010-09-09
+Author: Jeffrey A. Ryan
+Maintainer: Jeffrey A. Ryan <jeff.a.ryan@gmail.com>
+Description: Financial Option Pricing Tools
+License: GPL-2
+LazyLoad: yes

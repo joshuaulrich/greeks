@@ -27,6 +27,11 @@ try.osi <- function(osi) {
 # osi print method
 print.osi <- function(x, ...) print(unclass(x))
 
+as.data.frame.osi <- function(x, ...) {
+  structure(list(x), row.names=.set_row_names(length(x)), class="data.frame")
+}
+
+
 expiry <- function(osi) {
   osi <- try.osi(osi)
   if(!is.osi(osi))

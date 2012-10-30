@@ -1,10 +1,10 @@
 Package: greeks
 Type: Package
-Title: Financial Option Pricing Tools
-Version: 1.0
-Date: 2010-09-09
+Title: Financial Option Pricing And Manipulation Tools
+Version: 0.5
+Date: 2012-10-10
 Author: Jeffrey A. Ryan
 Maintainer: Jeffrey A. Ryan <jeff.a.ryan@gmail.com>
-Description: Financial Option Pricing Tools
+Description: Financial Option Pricing And Manipulation Tools
 License: GPL-2
 LazyLoad: yes

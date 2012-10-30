@@ -1,5 +1,10 @@
 contract <- function(underlying., expiry., strike., right.) {
   # contract("AAPL", "201010", 250, "C")
+  if(nchar(underlying.) > 6)
+    stop("'underlying' must be 6 characters or less")
+  expiry. <- as.Date(expiry.)
+  strike. <- as.numeric(strike.)
+  right. <- substr(toupper(right.),1,1)
   structure(list(underlying=underlying., expiry=expiry., strike=strike., right=right.),
             class="contract")
 }

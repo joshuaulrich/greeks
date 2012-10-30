@@ -1,5 +1,5 @@
 .First.lib <- function(libname, pkgname) {
-  library.dynam("greeks", pkgname, libname)
+#  library.dynam("greeks", pkgname, libname)
 }
 
 # temp names for .Call BSput and BScall

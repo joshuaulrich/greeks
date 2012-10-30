@@ -1,5 +1,6 @@
 \name{nextExp}
 \alias{nextExp}
+\alias{optionsExp}
 \title{
 Calculate Next Expiration Date For Derivatives
 }
@@ -15,7 +16,7 @@ nextExp(n = 1,
         mindays = 0, 
         from = Sys.Date(), 
         cycle = "monthly", 
-        calendar = "options", 
+        calendar = "options_occ", 
         expiration = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -37,7 +38,8 @@ Which expiration cycle should be used. Currently only 'monthly'
 is available.
 }
   \item{calendar}{
-Which product calendar should be used.
+Which product calendar should be used. \sQuote{options_occ} is
+the only included calendar at the time of release.
 }
   \item{expiration}{
 Should the actual expiration be used, e.g. the day following
@@ -64,9 +66,6 @@ It is always possible that dates change for exchanges or individual contracts. U
 your data provider and broker to verify consistency.
 }
 
-\seealso{
-\code{\link{optionsExp}}
-}
 \examples{
 nextExp()
 

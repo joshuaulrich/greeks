@@ -6,7 +6,7 @@ Calculate Option Values and Common Risk Sensitivities (Greeks)
 \description{
 Black-Scholes calculation of call and put values, given
 standard inputs. Also calculates 14 risk sensitivities,
-commonly referred to as sQuote{Greeks}.
+commonly referred to as \sQuote{Greeks}.
 }
 \usage{
 greeks(S, X, b, r, Time, v)
@@ -96,9 +96,9 @@ for puts.
 Jeffrey A. Ryan
 }
 \note{
-The accuracy of Black-Scholes pricing isn't the reason
+The precision of Black-Scholes pricing isn't the reason
 for using it, rather it is the speed at which values as well
-as greeks can be estimated.
+as approximate greeks can be estimated for a range of inputs.
 }
 
 

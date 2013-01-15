@@ -1,4 +1,4 @@
-.First.lib <- function(libname, pkgname) {
+.onLoad <- function(libname, pkgname) {
 #  library.dynam("greeks", pkgname, libname)
 }
 

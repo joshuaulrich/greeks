@@ -13,6 +13,10 @@ export(
        call.value,
        put.value,
 
+       # binomial
+       CRRtree,
+       JRtree,
+
        # osi
        as.osi,
        is.osi,

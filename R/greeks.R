@@ -7,12 +7,14 @@ function(S,X,b,r,Time,v) {
   Time <- as.numeric(Time)
   v <- as.numeric(v)
 
-  d1 <- (log(S/X) + (r - b + (v^2)/2)*Time ) / (v * sqrt(Time))
-  d2 <- d1 - v*(sqrt(Time))
-  cp <- (S * exp(-b*Time) * pnorm(d1)) -
-        (X * exp(-r*Time) * pnorm(d2))
-  pp <- exp(-r*Time) * X * pnorm(-d2) -
-        exp(-b*Time) * S * pnorm(-d1)
+#  d1 <- (log(S/X) + (r - b + (v^2)/2)*Time ) / (v * sqrt(Time))
+#  d2 <- d1 - v*(sqrt(Time))
+#  cp <- (S * exp(-b*Time) * pnorm(d1)) -
+#        (X * exp(-r*Time) * pnorm(d2))
+#  pp <- exp(-r*Time) * X * pnorm(-d2) -
+#        exp(-b*Time) * S * pnorm(-d1)
+  cp <- call.value(S,X,b,r,Time,v)$value
+  pp <- put.value(S,X,b,r,Time,v)$value
   delta.c <- exp( -b*Time ) * pnorm(d1)
   delta.p <- -exp( -b*Time ) * pnorm(-d1)
   vega  <- S * exp(-b*Time) * dnorm(d1) * sqrt(Time)

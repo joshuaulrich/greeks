@@ -18,6 +18,19 @@ export(
        JRtree,
        LRtree,
 
+       # skewness & kurtosis adjustments
+       JarrowRuddSkewKurtosis,
+       CorradoSuSkewKurtosis,
+       ModifiedCorradoSuSkewKurtosis,
+
+       # jump diffusion models
+       JumpDiffusionMerton,
+       JumpDiffusionBates,
+
+       # greeks methods (not yet S3!!!)
+       greeks.JDM,
+       greeks.JDB,
+
        # osi
        as.osi,
        is.osi,

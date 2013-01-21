@@ -15,8 +15,8 @@ function(S,X,b,r,Time,v) {
 #        exp(-b*Time) * S * pnorm(-d1)
   cp <- call.value(S,X,b,r,Time,v)$value
   pp <- put.value(S,X,b,r,Time,v)$value
-  delta.c <- exp( -b*Time ) * pnorm(d1)
-  delta.p <- -exp( -b*Time ) * pnorm(-d1)
+  delta.c <- exp( (b-r)*Time ) * pnorm(d1)
+  delta.p <- -exp( (b-r)*Time ) * pnorm(-d1)
   vega  <- S * exp(-b*Time) * dnorm(d1) * sqrt(Time)
   theta.c <- -exp(-b*Time) * (S*dnorm(d1)*v)/(2*sqrt(Time)) -
            r * X * exp(-r*Time) * pnorm(d2) 

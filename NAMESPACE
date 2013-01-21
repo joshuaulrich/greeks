@@ -16,6 +16,7 @@ export(
        # binomial
        CRRtree,
        JRtree,
+       LRtree,
 
        # osi
        as.osi,

@@ -31,12 +31,20 @@ BinomialDiscreteDiv <- function(type=c("ac","ap","ec","ep"),S,X,T,r,v,n,d,dT) {
 }
 
 DiscreteDivYield <- function(type=c("ac","ap","ec","ep"),S,X,T,r,v,n,d,dT) {
+#  > div  <- c(8, 5, 5, 5, 5) / 100
+#  > divT <- c(1, 2, 3, 4, 6) / 10
 #  > ss <- DiscreteDivYield("ec",100,101,0.5,.1,.3,100,div,divT)
 #  > ss$OV[[1]]
 #  [1] 1.051132
+#  > ss$St[[1]]
+#  [1] 74.93458
+
+  ##### TODO add in american style options 
 
   if(length(d) < 1) 
     return(CRRtree(type,S,X,T,r,r,v,n))
+
+
   dt <- T/n
   Df <- exp(-r*dt)
   U <- exp(v * sqrt(dt))

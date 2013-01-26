@@ -18,7 +18,7 @@ BosVandermarkCashDividend <- function(type=c("call","put"),S,X,T,r,b,v,d,dT) {
 
 
 BinomialDiscreteDiv <- function(type=c("ac","ap","ec","ep"),S,X,T,r,v,n,d,dT) {
-  z <- ifelse(grep('c',match.arg(type)), 1, -1)
+  z <- ifelse(grepl('c',match.arg(type)), 1, -1)
   dt <- T/n
   Df <- exp(-r*dt)
   u <- exp(v*sqrt(dt))
@@ -52,7 +52,9 @@ DiscreteDivYield <- function(type=c("ac","ap","ec","ep"),S,X,T,r,v,n,d,dT) {
   UU <- U^2
   p <- (exp(r*dt) - D) / (U-D)
 
-  z <- ifelse(grep('c',match.arg(type)), 1, -1)
+  type <- match.arg(type)
+  z <- ifelse(grepl("c",type), 1, -1)
+  american <- ifelse(grepl("a",type), TRUE, FALSE)
 
   i <- 0:(length(d)-1)
 
@@ -76,15 +78,22 @@ DiscreteDivYield <- function(type=c("ac","ap","ec","ep"),S,X,T,r,v,n,d,dT) {
 #      cat('div:',m,'\n')
       div <- d[match(m, steps)]
       St[[m+1]] <- (St[[m+2]]/(1-div)*D)[-1]
-      Ov[[m+1]] <- z*( p*Ov[[m+2]][-1] + (1-p)*Ov[[m+2]][-length(Ov[[m+2]])]) * Df
+      Ov[[m+1]] <- ( p*Ov[[m+2]][-1] + (1-p)*Ov[[m+2]][-length(Ov[[m+2]])]) * Df
     } else {
 #      cat('no div:',m,'\n')
       St[[m+1]] <- St[[m+2]][-1]*D
-      Ov[[m+1]] <- z*( p*Ov[[m+2]][-1] + (1-p)*Ov[[m+2]][-length(Ov[[m+2]])]) * Df
+      Ov[[m+1]] <- ( p*Ov[[m+2]][-1] + (1-p)*Ov[[m+2]][-length(Ov[[m+2]])]) * Df
+    }
+    if(american) {
+#print(Ov[[m+1]])
+#print(z*(St[[m+1]]-X))
+      Ov[[m+1]] <- mapply(max, Ov[[m+1]], z*(St[[m+1]] - X))
     }
   }
   St[[1]] <- St[[2]][-1]*D
-  Ov[[1]] <- z*( p*Ov[[2]][-1] + (1-p)*Ov[[2]][-length(Ov[[2]])]) * Df
+  Ov[[1]] <- ( p*Ov[[2]][-1] + (1-p)*Ov[[2]][-length(Ov[[2]])]) * Df
+    if(american) {
+      Ov[[1]] <- mapply(max, Ov[[1]], z*(St[[1]] - X))
+    }
   list(p=p,Df=Df,D=D,steps=steps,St=St,OV=Ov)
-
 }

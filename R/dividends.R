@@ -66,7 +66,8 @@ DiscreteDivYield <- function(type=c("ac","ap","ec","ep"),S,X,T,r,v,n,d,dT) {
   for(m in (n-1):1) {
     if(m %in% steps) {
 #      cat('div:',m,'\n')
-      St[[m+1]] <- (St[[m+2]]/(1-d[m])*D)[-1]
+      div <- d[match(m, steps)]
+      St[[m+1]] <- (St[[m+2]]/(1-div)*D)[-1]
       Ov[[m+1]] <- z*( p*Ov[[m+2]][-1] + (1-p)*Ov[[m+2]][-length(Ov[[m+2]])]) * Df
     } else {
 #      cat('no div:',m,'\n')

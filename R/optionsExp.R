@@ -78,7 +78,7 @@ nextExp <- function (n = 1,
 #      exp <- optionsExp(expiration)
 #    else stop("only calendar='options' supported")
 
-    exp[which(exp - from > mindays)[n]]
+    exp[which((as.Date(exp) - as.Date(from)) > mindays)[n]]
 }
 
 

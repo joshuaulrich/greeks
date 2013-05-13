@@ -39,9 +39,8 @@ DiscreteDivYield <- function(type=c("ac","ap","ec","ep"),S,X,T,r,v,n,d,dT) {
 #  > ss$St[[1]]
 #  [1] 74.93458
 
-  ##### TODO add in american style options 
 
-  if(length(d) < 1) 
+  if(length(d) < 1 || is.null(d)) 
     return(CRRtree(type,S,X,T,r,r,v,n))
 
 
@@ -70,6 +69,9 @@ DiscreteDivYield <- function(type=c("ac","ap","ec","ep"),S,X,T,r,v,n,d,dT) {
   # nodes at expiration
   i <- 0:n
   St[[n+1]] <- S*U^i*D^(n-i)*sumdiv
+#print(St[[n+1]])
+#  St[[n+1]] <- (S*U^i*D^(n-i))-5
+#print(St[[n+1]])
   Ov[[n+1]] <- mapply(max, z*(St[[n+1]]-X),0)
 
   #for(m in length(steps):1) {    ### WORKING on n=6...
@@ -78,6 +80,7 @@ DiscreteDivYield <- function(type=c("ac","ap","ec","ep"),S,X,T,r,v,n,d,dT) {
 #      cat('div:',m,'\n')
       div <- d[match(m, steps)]
       St[[m+1]] <- (St[[m+2]]/(1-div)*D)[-1]
+#      St[[m+1]] <- ((St[[m+2]]-5)*D)[-1]
       Ov[[m+1]] <- ( p*Ov[[m+2]][-1] + (1-p)*Ov[[m+2]][-length(Ov[[m+2]])]) * Df
     } else {
 #      cat('no div:',m,'\n')

@@ -53,11 +53,11 @@ strike <- function(osi) {
   as.numeric(substr(osi, 14,21)) / 1000
 }
 
-tte <- function(osi) {
+tte <- function(osi, from=Sys.Date()) {
   osi <- try.osi(osi)
   if(!is.osi(osi))
     stop("must be of class 'osi'")
-  as.integer(as.Date(strptime(unclass(substr(osi, 7,12)),"%y%m%d")) - Sys.Date())
+  as.integer(as.Date(strptime(unclass(substr(osi, 7,12)),"%y%m%d")) - as.Date(from))
 }
 
 underlying <- function(osi) {

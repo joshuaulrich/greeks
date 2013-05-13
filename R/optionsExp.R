@@ -68,17 +68,19 @@ nextExp <- function (n = 1,
                      mindays=0, 
                      from = Sys.Date(), 
                      cycle = "monthly",
-                     calendar = "options",
+                     #calendar = "options",
+                     calendar = .optionsExp,
                      expiration = TRUE) 
 {
-    exp <- switch(calendar,
-                  "options"=optionsExp(expiration, cycle)
-                 )
+    #exp <- switch(calendar,
+    #              "options"=optionsExp(expiration, cycle)
+    #             )
 #    if( calendar == "options")
 #      exp <- optionsExp(expiration)
 #    else stop("only calendar='options' supported")
 
-    exp[which((as.Date(exp) - as.Date(from)) > mindays)[n]]
+    #exp[which((as.Date(exp) - as.Date(from)) > mindays)[n]]
+    calendar[which((as.Date(calendar) - as.Date(from)) > mindays)[n]]
 }
 
 

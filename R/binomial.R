@@ -194,3 +194,10 @@ BinomialTree <- function(stock=100,strike=100,r=0.06,sigma=0.165,N=3) {
     P[[i]] <- mapply(max, dis*(p*P[[i+1]][1+(1:i)] + (1-p)*P[[i+1]][1:i]), 100-S[[i]])
   list(Stock=S,Put=P)
 }
+
+RubinsteinSKB <- function(type,S,X,T,r,b,v,skew,kurt,n,expansion=c('edgeworth','gram-charlier')) {
+  z <- ifelse(grepl("c",match.arg(type)), 1, -1)
+  dt <- T/n
+  u <- exp( (b-v^2 / 2) * dt + v*sqrt(dt))
+  d <- exp( (b-v^2 / 2) * dt - v*sqrt(dt))
+}

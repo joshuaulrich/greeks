@@ -69,9 +69,12 @@ underlying <- function(osi) {
 
 Ops.osi <- function(e1, e2) {
   # construct strategies using contracts/osi
-  if( missing(e2) && .Generic=="-") {
-    structure( e1, pos=-1, class=c("osi_list","osi"))
-  } else
+
+  if(.Generic=='-' && missing(e2)) {
+    #e2 <- structure(e2, pos = -1, class = c("osi_list", "osi"))
+    e2 <- -1
+  }
+
   if( is.numeric(e1))  {
     structure( e2, pos=e1, class=c("osi_list","osi"))
   } else
@@ -79,9 +82,14 @@ Ops.osi <- function(e1, e2) {
     structure( e1, pos=e2, class=c("osi_list","osi"))
   } else
   if(is.list(e1) || is.list(e2)) {
+    if( !is.list(e1))
+      e1 <- list(e1)
+    if( !is.list(e2))
+      e2 <- list(e2)
     structure(append(e1,e2), class=c("osi_list","osi"))
   } else {
     structure(list(e1,e2), class=c("osi_list","osi"))
   }
 }
+
 

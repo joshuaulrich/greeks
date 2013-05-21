@@ -7,8 +7,8 @@ function(S,X,b,r,Time,v) {
   Time <- as.numeric(Time)
   v <- as.numeric(v)
 
-#  d1 <- (log(S/X) + (r - b + (v^2)/2)*Time ) / (v * sqrt(Time))
-#  d2 <- d1 - v*(sqrt(Time))
+  d1 <- (log(S/X) + (r - b + (v^2)/2)*Time ) / (v * sqrt(Time))
+  d2 <- d1 - v*(sqrt(Time))
 #  cp <- (S * exp(-b*Time) * pnorm(d1)) -
 #        (X * exp(-r*Time) * pnorm(d2))
 #  pp <- exp(-r*Time) * X * pnorm(-d2) -

@@ -8,59 +8,22 @@ fischer.skewness <- function(r) {
   
 }  
 
-# add in test results from Haug worksheet output as 'correct', use to verify this code
-CRRtree_discrete_dividends <- function() {}
-JRtree_discrete_dividends <- function() {}
-LRtree_discrete_dividends <- function() {}
+CRRtree <- function(type=c('ac','ap','ec','ep'),
+                    S, #stock=42,
+                    X, #strike=40,
+                    r, #r=0.1,
+                    b, #b=0.1,
+                    v, #sigma=0.2,
+                    Time, #T=0.5,
+                    N=52) 
+{
+  # e.g. from Haug
+  # S=42, X=40, r=0.1, b=0.1, v=0.2, Time=0.5, N=52
+  stock <- S
+  strike <- X
+  sigma <- v
+  T <- Time
 
-JarrowRuddSkewKurtosis <- function(type=c("call","put"),stock=42,strike=40,r=0.1,b=0.1,sigma=0.2,T=0.5,skew,kurt) {
-  d1 <- ( log(stock/strike) + (r + sigma^2/2)*T )/ (sigma*sqrt(T))
-  d2 <- d1 - sigma*sqrt(T)
-  aX <- (strike * sigma * sqrt(T*2*pi))^-1 * exp(-d2^2 / 2)
-  daX <- aX * (d2 - sigma * sqrt(T)) / (strike* sigma * sqrt(T))
-  daXX <- aX / (strike^2 * sigma * sqrt(T)) * ((d2 - sigma * sqrt(T))^2 - sigma * sqrt(T) * (d2 - sigma * sqrt(T)) - 1)
-  q <- sqrt(exp(sigma^2 * T) - 1)
-  GA <- 3*q*q^3
-  gAA <- 16 * q^2 + 15 * q^4 + 6 * q^6 + q^8 + 3
-  Lambda1 <- skew - GA
-  Lambda2 <- kurt - gAA
-
-  Q3 <- -(stock * exp(r * T))^3 * (exp(sigma^2 * T) - 1)^(3/2) * exp(-r*T) / 6 * daX
-  Q4 <- (stock * exp(r*T))^4 * (exp(sigma^2*T) - 1) ^ 2 * exp(-r*T) / 24 * daXX
-
-  cp <- call.value(stock,strike,b,r,T,sigma)$value + Lambda1*Q3 + Lambda2*Q4
-  if(match.arg(type) == "call")
-    cp
-  else
-    cp - stock*exp((b-r)*T) + strike*exp(-r*T)
-}
-CorradoSuSkewKurtosis <- function(type=c("call","put"),stock=42,strike=40,r=0.1,b=0.1,sigma=0.2,T=0.5,skew,kurt) {
-  d1 <- ( log(stock/strike) + (b + sigma^2/2)*T )/ (sigma*sqrt(T))
-  d2 <- d1 - sigma*sqrt(T)
-  Q4 <- 1/24 * stock * sigma * sqrt(T) * ((d1^2-1-3*sigma*sqrt(T)*d2) * dnorm(d1) + sigma^3 * T^1.5 * pnorm(d1))
-  Q3 <- 1/6 * stock * sigma * sqrt(T) * ((2*sigma*sqrt(T)-d1) * dnorm(d1) + sigma^2 * T * pnorm(d1))
-  
-  cp <- call.value(stock,strike,b,r,T,sigma)$value + skew*Q3 + (kurt-3)*Q4
-  if(match.arg(type) == "call")
-    cp
-  else
-    cp - stock*exp((b-r)*T) + strike*exp(-r*T)  # put via put-call parity
-}
-ModifiedCorradoSuSkewKurtosis <- function(type=c("call","put"),stock=42,strike=40,r=0.1,b=0.1,sigma=0.2,T=0.5,skew,kurt) {
-  w <- skew/6 * sigma^3 * T^1.5 + kurt/24 * sigma^4 * T^2
-  d <- (log(stock/strike) + (b+sigma^2/2)*T - log(1+w)) / (sigma * sqrt(T))
-  Q3 <- 1/(6*(1+w))*stock*sigma*sqrt(T)*(2*sigma*sqrt(T)-d)*dnorm(d)
-  Q4 <- 1/(24*1+w)*stock*sigma*sqrt(T)*(d^2-3*d*sigma*sqrt(T)+3*sigma^2*T-1)*dnorm(d)
-
-  cp <- call.value(stock,strike,b,r,T,sigma)$value + skew*Q3 + (kurt-3)*Q4
-  if(match.arg(type) == "call")
-    cp
-  else
-    cp - stock*exp((b-r)*T) + strike*exp(-r*T)  # put via put-call parity
-}
-
-
-CRRtree <- function(type=c('ac','ap','ec','ep'),stock=42,strike=40,r=0.1,b=0.1,sigma=0.2,T=0.5,N=52) {
   type <- match.arg(type)
   z <- ifelse(type %in% c('ac','ec'), 1, -1)
   american <- ifelse(type %in% c('ac','ap'), TRUE, FALSE)
@@ -73,7 +36,7 @@ CRRtree <- function(type=c('ac','ap','ec','ep'),stock=42,strike=40,r=0.1,b=0.1,s
   dis <- exp(-r*dt)
 
   # stock price
-  S <- matrix(0,nc=N+1,nrow=N+1) 
+  S <- matrix(0,ncol=N+1,nrow=N+1) 
   S <- lapply(0:N, function(N.) stock * u^(0:N.) * d^(N.:0))
  
   # option price
@@ -94,7 +57,20 @@ CRRtree <- function(type=c('ac','ap','ec','ep'),stock=42,strike=40,r=0.1,b=0.1,s
 }
 
 #JRtree <- function(stock=100,strike=100,r=0.06,sigma=0.165,T=1,N=3) {
-JRtree <- function(type=c('ac','ap','ec','ep'),stock=42,strike=40,r=0.1,b=0.1,sigma=0.2,T=0.5,N=52) {
+JRtree <- function(type=c('ac','ap','ec','ep'),
+                   S, #stock=42,
+                   X, #strike=40,
+                   r, #r=0.1,
+                   b, #b=0.1,
+                   v, #sigma=0.2,
+                   Time, #T=0.5,
+                   N=52) 
+{
+  stock <- S
+  strike <- X
+  sigma <- v
+  T <- Time
+
   type <- match.arg(type)
   z <- ifelse(type %in% c('ac','ec'), 1, -1)
   american <- ifelse(type %in% c('ac','ap'), TRUE, FALSE)
@@ -108,7 +84,7 @@ JRtree <- function(type=c('ac','ap','ec','ep'),stock=42,strike=40,r=0.1,b=0.1,si
   p <- 0.5 #*(1.0 + (r - 0.5*sigma^2)*sqrt(dt))
 
   # stock price
-  S <- matrix(0,nc=N+1,nrow=N+1) 
+  S <- matrix(0,ncol=N+1,nrow=N+1) 
   S <- lapply(0:N, function(N.) stock * u^(0:N.) * d^(N.:0))
 
   # option price
@@ -129,7 +105,22 @@ JRtree <- function(type=c('ac','ap','ec','ep'),stock=42,strike=40,r=0.1,b=0.1,si
   structure(list(Stock=S,Price=P,Greeks=g), class=c("binomialtree", "JRtree"))
 }
 
-LRtree <- function(type=c('ac','ap','ec','ep'),stock=42,strike=40,r=0.1,b=0.1,sigma=0.2,T=0.5,N=53, method=2, force.odd=TRUE) {
+LRtree <- function(type=c('ac','ap','ec','ep'),
+                   S, #stock=42,
+                   X, #strike=40,
+                   r, #r=0.1,
+                   b, #b=0.1,
+                   v, #sigma=0.2,
+                   Time, #T=0.5,
+                   N=53, 
+                   method=2, 
+                   force.odd=TRUE) 
+{
+  stock <- S
+  strike <- X
+  sigma <- v
+  T <- Time
+
   type <- match.arg(type)
   z <- ifelse(type %in% c('ac','ec'), 1, -1)
   american <- ifelse(type %in% c('ac','ap'), TRUE, FALSE)
@@ -156,7 +147,7 @@ LRtree <- function(type=c('ac','ap','ec','ep'),stock=42,strike=40,r=0.1,b=0.1,si
   dis <- exp(-r*dt)
 
   # stock price
-  S <- matrix(0,nc=N+1,nrow=N+1) 
+  S <- matrix(0,ncol=N+1,nrow=N+1) 
   S <- lapply(0:N, function(N.) stock * u^(0:N.) * d^(N.:0))
 
   # option price
@@ -176,6 +167,9 @@ LRtree <- function(type=c('ac','ap','ec','ep'),stock=42,strike=40,r=0.1,b=0.1,si
   g$theta <- (P[[3]][2] - P[[1]]) / (2*dt) / 365
   structure(list(Stock=S,Price=P,Greeks=g), class=c("binomialtree", "LRtree"))
 }
+
+
+# generic/unused template
 BinomialTree <- function(stock=100,strike=100,r=0.06,sigma=0.165,N=3) {
   # I think this one is wrong
   dt <- T/N
@@ -184,7 +178,7 @@ BinomialTree <- function(stock=100,strike=100,r=0.06,sigma=0.165,N=3) {
   dis <- exp(-r*dt)
   p <- ( exp(r*dt) - d )/(u-d)
 
-  S <- matrix(0,nc=N+1,nrow=N+1) 
+  S <- matrix(0,ncol=N+1,nrow=N+1) 
   # stock price
   S <- lapply(0:N, function(N.) stock * u^(0:N.) * d^(N.:0))
   S
@@ -195,9 +189,7 @@ BinomialTree <- function(stock=100,strike=100,r=0.06,sigma=0.165,N=3) {
   list(Stock=S,Put=P)
 }
 
-RubinsteinSKB <- function(type,S,X,T,r,b,v,skew,kurt,n,expansion=c('edgeworth','gram-charlier')) {
-  z <- ifelse(grepl("c",match.arg(type)), 1, -1)
-  dt <- T/n
-  u <- exp( (b-v^2 / 2) * dt + v*sqrt(dt))
-  d <- exp( (b-v^2 / 2) * dt - v*sqrt(dt))
-}
+# add in test results from Haug worksheet output as 'correct', use to verify this code
+CRRtree_discrete_dividends <- function() {}
+JRtree_discrete_dividends <- function() {}
+LRtree_discrete_dividends <- function() {}

@@ -16,7 +16,7 @@ nextExp(n = 1,
         mindays = 0, 
         from = Sys.Date(), 
         cycle = "monthly", 
-        calendar = "options_occ", 
+        calendar = .OCC,
         expiration = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -38,7 +38,7 @@ Which expiration cycle should be used. Currently only 'monthly'
 is available.
 }
   \item{calendar}{
-Which product calendar should be used. \sQuote{options_occ} is
+Which product calendar should be used. \sQuote{.OCC} is
 the only included calendar at the time of release.
 }
   \item{expiration}{

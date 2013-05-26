@@ -4,7 +4,7 @@
 # optionsExp() returns the Saturday of exiration as Date
 # nextExp(n=1) returns the nearest 'n' expirations 'from' as Date
 
-.optionsExp <- structure(c(7323, 7351, 7379, 7414, 7442, 7470, 7505, 7533, 7568, 
+.OCC <- structure(c(7323, 7351, 7379, 7414, 7442, 7470, 7505, 7533, 7568, 
 7596, 7624, 7659, 7687, 7715, 7743, 7778, 7806, 7841, 7869, 7897, 
 7932, 7960, 7988, 8023, 8051, 8086, 8114, 8142, 8170, 8205, 8233, 
 8268, 8296, 8324, 8359, 8387, 8415, 8450, 8478, 8506, 8541, 8569, 
@@ -55,13 +55,13 @@
 ), 
 class = "Date")
 
-optionsExp <- function(expiration=TRUE, cycle="monthly") {
+optionsExp <- function(expiration=TRUE, cycle="monthly", calendar=.OCC) {
   if( cycle != "monthly")
     stop("unsupported 'cycle'")
 
   if( expiration)
-    .optionsExp + 1 # expiration date (as opposed to last trading)
-  else .optionsExp
+    calendar + 1 # expiration date (as opposed to last trading)
+  else calendar
 }
 
 nextExp <- function (n = 1, 
@@ -69,7 +69,7 @@ nextExp <- function (n = 1,
                      from = Sys.Date(), 
                      cycle = "monthly",
                      #calendar = "options",
-                     calendar = .optionsExp,
+                     calendar = .OCC,
                      expiration = TRUE) 
 {
     #exp <- switch(calendar,

@@ -1,6 +1,8 @@
 \name{contract}
 \alias{contract}
 \alias{as.contract}
+\alias{as.contract.osi}
+\alias{as.contract.character}
 \title{
 Convert To And From Class \code{contract}
 }

@@ -10,8 +10,11 @@ export(
 
        # greek calculation
        greeks,
-       call.value,
-       put.value,
+
+       # Black Scholes Merton
+       BlackScholesMerton,
+       #call.value,
+       #put.value,
 
        # binomial
        CRRtree,
@@ -73,8 +76,11 @@ S3method(as.osi, default)
 
 S3method(print, greeks)
 
+S3method(print, binomialtree)
+
 S3method(Ops, osi)
 S3method(print, osi)
+S3method(str, osi)
 
 S3method(as.data.frame, osi)
 

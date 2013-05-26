@@ -98,5 +98,6 @@ DiscreteDivYield <- function(type=c("ac","ap","ec","ep"),S,X,T,r,v,n,d,dT) {
     if(american) {
       Ov[[1]] <- mapply(max, Ov[[1]], z*(St[[1]] - X))
     }
+  # TODO greeks
   list(p=p,Df=Df,D=D,steps=steps,St=St,OV=Ov)
 }

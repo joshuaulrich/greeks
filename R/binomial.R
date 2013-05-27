@@ -15,7 +15,7 @@ CRRtree <- function(type=c('ac','ap','ec','ep'),
                     b, #b=0.1,
                     v, #sigma=0.2,
                     Time, #T=0.5,
-                    N=52) 
+                    N=52, ...) 
 {
   # e.g. from Haug
   # S=42, X=40, r=0.1, b=0.1, v=0.2, Time=0.5, N=52
@@ -64,7 +64,7 @@ JRtree <- function(type=c('ac','ap','ec','ep'),
                    b, #b=0.1,
                    v, #sigma=0.2,
                    Time, #T=0.5,
-                   N=52) 
+                   N=52, ...) 
 {
   stock <- S
   strike <- X
@@ -114,7 +114,7 @@ LRtree <- function(type=c('ac','ap','ec','ep'),
                    Time, #T=0.5,
                    N=53, 
                    method=2, 
-                   force.odd=TRUE) 
+                   force.odd=TRUE, ...) 
 {
   stock <- S
   strike <- X

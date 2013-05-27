@@ -1,6 +1,20 @@
 # Skew and Kurtosis Adjustments
 
-JarrowRuddSkewKurtosis <- function(type=c("call","put"),stock=42,strike=40,r=0.1,b=0.1,sigma=0.2,T=0.5,skew,kurt) {
+JarrowRuddSkewKurtosis <- function(type=c("call","put"),
+                                   S, #stock=42,
+                                   X, #strike=40,
+                                   r, #r=0.1,
+                                   b, #b=0.1,
+                                   v, #sigma=0.2,
+                                   Time, #T=0.5,
+                                   skew=0,
+                                   kurt=3) 
+{
+  stock <- S
+  strike <- X
+  sigma <- v
+  T <- Time
+
   d1 <- ( log(stock/strike) + (r + sigma^2/2)*T )/ (sigma*sqrt(T))
   d2 <- d1 - sigma*sqrt(T)
   aX <- (strike * sigma * sqrt(T*2*pi))^-1 * exp(-d2^2 / 2)
@@ -15,13 +29,28 @@ JarrowRuddSkewKurtosis <- function(type=c("call","put"),stock=42,strike=40,r=0.1
   Q3 <- -(stock * exp(r * T))^3 * (exp(sigma^2 * T) - 1)^(3/2) * exp(-r*T) / 6 * daX
   Q4 <- (stock * exp(r*T))^4 * (exp(sigma^2*T) - 1) ^ 2 * exp(-r*T) / 24 * daXX
 
-  cp <- call.value(stock,strike,b,r,T,sigma)$value + Lambda1*Q3 + Lambda2*Q4
+  cp <- BlackSholesMerton('c',stock,strike,b,r,T,sigma)$value + Lambda1*Q3 + Lambda2*Q4
   if(match.arg(type) == "call")
     cp
   else
     cp - stock*exp((b-r)*T) + strike*exp(-r*T)
 }
-CorradoSuSkewKurtosis <- function(type=c("call","put"),stock=42,strike=40,r=0.1,b=0.1,sigma=0.2,T=0.5,skew,kurt) {
+
+CorradoSuSkewKurtosis <- function(type=c("call","put"),
+                                   S, #stock=42,
+                                   X, #strike=40,
+                                   r, #r=0.1,
+                                   b, #b=0.1,
+                                   v, #sigma=0.2,
+                                   Time, #T=0.5,
+                                   skew=0,
+                                   kurt=3) 
+{
+  stock <- S
+  strike <- X
+  sigma <- v
+  T <- Time
+
   d1 <- ( log(stock/strike) + (b + sigma^2/2)*T )/ (sigma*sqrt(T))
   d2 <- d1 - sigma*sqrt(T)
   Q4 <- 1/24 * stock * sigma * sqrt(T) * ((d1^2-1-3*sigma*sqrt(T)*d2) * dnorm(d1) + sigma^3 * T^1.5 * pnorm(d1))
@@ -33,7 +62,22 @@ CorradoSuSkewKurtosis <- function(type=c("call","put"),stock=42,strike=40,r=0.1,
   else
     cp - stock*exp((b-r)*T) + strike*exp(-r*T)  # put via put-call parity
 }
-ModifiedCorradoSuSkewKurtosis <- function(type=c("call","put"),stock=42,strike=40,r=0.1,b=0.1,sigma=0.2,T=0.5,skew,kurt) {
+
+ModifiedCorradoSuSkewKurtosis <- function(type=c("call","put"),
+                                   S, #stock=42,
+                                   X, #strike=40,
+                                   r, #r=0.1,
+                                   b, #b=0.1,
+                                   v, #sigma=0.2,
+                                   Time, #T=0.5,
+                                   skew=0,
+                                   kurt=3) 
+{
+  stock <- S
+  strike <- X
+  sigma <- v
+  T <- Time
+
   w <- skew/6 * sigma^3 * T^1.5 + kurt/24 * sigma^4 * T^2
   d <- (log(stock/strike) + (b+sigma^2/2)*T - log(1+w)) / (sigma * sqrt(T))
   Q3 <- 1/(6*(1+w))*stock*sigma*sqrt(T)*(2*sigma*sqrt(T)-d)*dnorm(d)

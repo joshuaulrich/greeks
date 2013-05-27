@@ -27,9 +27,9 @@ try.osi <- function(osi) {
 # osi print method
 print.osi <- function(x, ...) print(unclass(x))
 
-str.osi <- function(x) {
-  cat('OSI: ',unclass(x),'\n')
-  str(unclass(as.contract(x)))
+str.osi <- function(object, ...) {
+  cat('OSI: ',unclass(object),'\n')
+  str(unclass(as.contract(object)))
 }
 
 as.data.frame.osi <- function(x, ...) {

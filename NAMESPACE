@@ -21,6 +21,11 @@ export(
        JRtree,
        LRtree,
 
+       # dividend models
+       DiscreteDivYield,
+       BosVandermarkCashDividend,
+
+
        # skewness & kurtosis adjustments
        JarrowRuddSkewKurtosis,
        CorradoSuSkewKurtosis,

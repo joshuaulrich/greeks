@@ -76,6 +76,9 @@ Which Preizer-Pratt inversion method? 1 or 2.
   \item{force.odd}{
 Should LR N-steps be forced to odd.
 }
+  \item{\ldots}{
+Unused. 
+}
 }
 \details{
 All trees implemented are translations from Espen Haug's excellent

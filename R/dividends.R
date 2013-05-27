@@ -1,4 +1,76 @@
-# dividend payouts 
+# Code adapted from The Complete Guide To Option Pricing Formulas 2nd Edition
+# Espen Haug.  Chapter 9. Options On Stocks
+#
+# Additional code used is for validation/inspiration:
+#  http://www.mathfinance.cn/valuation-of-stock-option-with-discrete-dividend/
+
+EscrowedDividend <- function(type=c('call','put'), S, X, b, r, Time, v, d, dT) {
+  # Merton 73
+  adj.s <- S-exp(-r*dT)*d
+  if(missing(type))
+  BlackScholesMerton(,S=adj.s, X=X, r=r, b=b, Time=Time, v=v)
+  else
+  BlackScholesMerton(type,S=adj.s, X=X, r=r, b=b, Time=Time, v=v)
+}
+HaugHaugDividend <- function(type=c('call','put'), S, X, b, r, Time, v, d, dT) {
+  warning('BROKEN: do not use!!!')
+  # Haug, Haug 1998
+  adj.s <- S-exp(-r*dT)*d
+  adj.vol <- v*S/adj.s
+  adj.vol <- sqrt(((v^2)*dT + (adj.vol^2)*(Time-dT)) / Time)
+  if(missing(type))
+  BlackScholesMerton(,S=adj.s, X=X, r=r, b=b, Time=Time, v=adj.vol)
+  else
+  BlackScholesMerton(type,S=adj.s, X=X, r=r, b=b, Time=Time, v=adj.vol)
+}
+ChrissDividend <- function(type=c('call','put'), S, X, b, r, Time, v, d, dT) {
+  # Chriss 1997
+  adj.s <- S-exp(-r*dT)*d
+  adj.vol <- v*S/adj.s
+  if(missing(type))
+  BlackScholesMerton(,S=adj.s, X=X, r=r, b=b, Time=Time, v=adj.vol)
+  else
+  BlackScholesMerton(type=type,S=adj.s, X=X, r=r, b=b, Time=Time, v=adj.vol)
+}
+BosGairatShepelevaDividend <- function(type=c('call','put'), S, X, b, r, Time, v, d, dT) {
+  lns <- log(S)
+  lnx <- log( (X+d*exp(-r*dT)) * exp(-r*Time))
+  z1 <- (lns-lnx) / (v * sqrt(Time))+v*sqrt(Time)/2
+  z2 <- z1 + v * sqrt(Time)/2
+  adj.s <- S - exp(-r*dT)*d
+  adj.vol <- sqrt(v^2 + v*sqrt(pi/(2*Time))*
+             (4*exp(z1^2/2-lns)*d*exp(-r*dT)*
+             (pnorm(z1) - pnorm(z1-v*dT/sqrt(Time))) +
+             exp(z2^2/2-2*lns)*d^2*
+             exp(-r*2*dT)*(pnorm(z2)-pnorm(z2-2*v*dT/sqrt(Time)))))
+  BlackScholesMerton(type,adj.s, X, r, b=b, Time=Time, v=adj.vol)
+}
+HaugHaugLewisDividend <- function(type=c('ac','ap','ec','ep'),S,X,b,r,Time,v,d,dT) {
+  lns <- log(S)
+  cp <- ifelse(grepl('c',type), 'c','p')
+  american <- ifelse(grepl('a',type), TRUE, FALSE)
+  if( !american) {
+    exp(-r*dT) * (integrate(function(x) BlackScholesMerton('c',x-d, X,b=b, r, Time-dT,v)$call$value * dlnorm(x,lns+(r-0.5*v^2)*dT,v*sqrt(dT)),d,X+d)$value +
+    integrate(function(x) BlackScholesMerton(cp,x-d, X,b=b, r, Time-dT,sigma)$call$value * dlnorm(x,lns+(r-0.5*v^2)*dT,sigma*sqrt(dT)),X+d,20*S)$value)
+  } else {
+    i1 <- function(x) {
+            max(x-X, BlackScholesMerton(cp,x-d, X,b=b, r, Time-dT,v)$call$value) * 
+                     dlnorm(x,lns+(r-0.5*v^2)*dT,v*sqrt(dT))
+          }
+    i2 <- function(x) {
+            max(x-X, BlackScholesMerton(cp,x-d, X,b=b, r, Time-dT,v)$call$value) * 
+                     dlnorm(x,lns+(r-0.5*v^2)*dT,v*sqrt(dT))
+          }
+    exp(-r*dT) * (integrate(Vectorize(i1), d, X+d)$value+integrate(Vectorize(i2), X+d, 20*S)$value)
+  }
+}
+
+DiscreteDividend <- function(type=c('ec','ep','ac','ap'), S, X, b, r, Time, v, d, dT,
+                             method=c('BosVandermark','HaugHaugLewis','HaugHaug','Chriss','BosGairatShepeleva','Escrowed'))
+{
+  method <- match.arg(method)
+  do.call(method, list(type=type,S=S,X=X,b=b,r=r,Time=Time,v=v,d=d,dT=dT))
+}
 
 BosVandermarkCashDividend <- function(type=c("call","put"),S,X,T,r,b,v,d,dT) {
   # only for european options!

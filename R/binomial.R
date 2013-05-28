@@ -15,10 +15,11 @@ CRRtree <- function(type=c('ac','ap','ec','ep'),
                     b, #b=0.1,
                     v, #sigma=0.2,
                     Time, #T=0.5,
-                    N=52, ...) 
+                    N=52, lambda=1, drift=0,...) 
 {
   # e.g. from Haug
   # S=42, X=40, r=0.1, b=0.1, v=0.2, Time=0.5, N=52
+  # http://www.sitmo.com/article/binomial-and-trinomial-trees/
   stock <- S
   strike <- X
   sigma <- v
@@ -30,8 +31,19 @@ CRRtree <- function(type=c('ac','ap','ec','ep'),
 
   # Example from Haug PlainTrees.xls
   dt <- T/N
-  u <- exp( sigma * sqrt(dt))
-  d <- 1/u
+
+  if(lambda != 1 && drift != 0)
+    warning(paste('only one of',sQuote('lambda'),'or',sQuote('drift'),'should be set'))
+
+  #  Generalized CRR allows for a lambda 'tilt' parameter
+  #  http://www.goddardconsulting.ca/option-pricing-binomial-alts.html#crrdrift
+  #  see also Chung and Shih (2007) for G-CRR extension
+  if(lambda != 1)
+    warning(paste(sQuote('lambda'),'parameter is experimental.'))
+
+  u <- exp( (drift*dt) + lambda * sigma * sqrt(dt))
+  #d <- 1/u
+  d <- exp( (drift*dt) -(1/lambda)*sigma*sqrt(dt))
   p = (exp(b * dt) - d) / (u - d)
   dis <- exp(-r*dt)
 
@@ -56,7 +68,6 @@ CRRtree <- function(type=c('ac','ap','ec','ep'),
   structure(list(Stock=S,Price=P,Greeks=g), class=c("binomialtree", "CRRtree"))
 }
 
-#JRtree <- function(stock=100,strike=100,r=0.06,sigma=0.165,T=1,N=3) {
 JRtree <- function(type=c('ac','ap','ec','ep'),
                    S, #stock=42,
                    X, #strike=40,
@@ -135,10 +146,15 @@ LRtree <- function(type=c('ac','ap','ec','ep'),
     # Preizer-Pratt inversion method 1
     hd1 <- 0.5 + sign(d1) * sqrt(0.25-0.25*exp(-(d1/ (N+1/3))^2 * (N+1/6)))
     hd2 <- 0.5 + sign(d2) * sqrt(0.25-0.25*exp(-(d2/ (N+1/3))^2 * (N+1/6)))
-  } else {
+  } else if(method==2) {
     # Preizer-Pratt inversion method 2
     hd1 <- 0.5 + sign(d1) * sqrt(0.25-0.25*exp(-(d1/ (N+1/3+0.1/(N+1)))^2 * (N+1/6)))
     hd2 <- 0.5 + sign(d2) * sqrt(0.25-0.25*exp(-(d2/ (N+1/3+0.1/(N+1)))^2 * (N+1/6)))
+  } else if(method==3) {
+    stop('Method 3 not yet supported')
+  #  a <- N-0
+  #  b <- 0
+  #  (b/a)^2 * ((sqrt((9*a − 1)*(9*b − 1) + 3*z*sqrt(a*(9*b - 1)^2 + b*(9*a - 1)^2 - 9*a*b*z^2))/((9*b-1)^2 - 9*b*z^2))^(1/3))
   }
   dt <- T/N
   p <- hd2

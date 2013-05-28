@@ -19,7 +19,7 @@ CRRtree(type = c("ac", "ap", "ec", "ep"),
        b, 
        v, 
        Time, 
-       N = 52, ...)
+       N = 52, lambda=1, drift=0, ...)
 
 JRtree(type = c("ac", "ap", "ec", "ep"), 
        S, 
@@ -76,6 +76,14 @@ Which Preizer-Pratt inversion method? 1 or 2.
   \item{force.odd}{
 Should LR N-steps be forced to odd.
 }
+  \item{lambda}{
+Adjust tilt per Generalized CRR of Chung and Shih (2007). When lambda=0
+this is the regular CRR tree.
+}
+  \item{drift}{
+Correct for deep out of the money. When drift=0, this is the standard
+CRR tree.
+}
   \item{\ldots}{
 Unused. 
 }
@@ -115,6 +123,13 @@ tradeoff to higher accuracy comes at a cost of increasing cost of computation.
 \examples{
 # Cox-Ross-Rubinstein 
 CRRtree(S=42, X=40, r=0.1, b=0.1, v=0.2, Time=0.5, N=5)
+
+# Cox-Ross-Rubinstein with drift
+CRRtree(S=42, X=40, r=0.1, b=0.1, v=0.2, Time=0.5, N=5, drift=1)
+
+# Generalized Cox-Ross-Rubinstein
+CRRtree(S=42, X=40, r=0.1, b=0.1, v=0.2, Time=0.5, N=5, lambda=2)
+CRRtree(S=42, X=40, r=0.1, b=0.1, v=0.2, Time=0.5, N=5, lambda=0.5)
 
 # Jarrow-Rudd
 JRtree(S=42, X=40, r=0.1, b=0.1, v=0.2, Time=0.5, N=5)

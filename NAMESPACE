@@ -16,14 +16,21 @@ export(
        #call.value,
        #put.value,
 
-       # binomial
+       # binomial tree methods
        CRRtree,
        JRtree,
        LRtree,
 
-       # dividend models
+       # trinomial tree methods
+
+       # dividend models and approximations
        DiscreteDivYield,
        BosVandermarkCashDividend,
+       EscrowedDividend,   # a.k.a Merton 73
+       ChrissDividend,
+       BosGairatShepelevaDividend, 
+       HaugHaugDividend,
+       HaugHaugLewisDividend,
 
 
        # skewness & kurtosis adjustments
@@ -46,9 +53,6 @@ export(
        # stochastic volatility models
        # SABR
        # Hull
-
-       # American approximations
-       #
 
        # implied volatility       
 

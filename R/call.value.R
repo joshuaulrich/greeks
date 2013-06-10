@@ -1,4 +1,4 @@
-BlackScholesMerton <- function(type=c('c','p'), S, X, b, r, Time, v) {
+BlackScholesMerton <- function(type=c('ec','ep'), S, X, b, r, Time, v) {
   S <- as.numeric(S)
   X <- as.numeric(X)
   b <- as.numeric(b)
@@ -8,13 +8,13 @@ BlackScholesMerton <- function(type=c('c','p'), S, X, b, r, Time, v) {
 
   d1 <- (log(S/X) + (b + (v^2)/2) * Time)/(v * sqrt(Time))
   d2 <- d1 - v * (sqrt(Time))
-  if('c' %in% type) {
+  if('ec' %in% type) {
     cp <- (S * exp( (b-r) * Time) * pnorm(d1)) - (X * exp(-r * Time) *
           pnorm(d2))
     delta.c <- exp(-b * Time) * pnorm(d1) ###### FIXME/CHECKME
   } else cp <- delta.c <- NA
 
-  if('p' %in% type) {
+  if('ep' %in% type) {
     pp <- exp(-r * Time) * X * pnorm(-d2) - exp((b-r) * Time) * 
           S * pnorm(-d1)
     delta.p <- -exp(-b * Time) * pnorm(-d1)  #### FIXME/CHECKME

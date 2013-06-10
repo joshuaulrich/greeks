@@ -6,7 +6,8 @@
 
 EscrowedDividend <- function(type=c('call','put'), S, X, b, r, Time, v, d, dT) {
   # Merton 73
-  adj.s <- S-exp(-r*dT)*d
+  #adj.s <- S-exp(-r*dT)*d
+  adj.s <- S - sum(d*exp(-r*dT))
   if(missing(type))
   BlackScholesMerton(,S=adj.s, X=X, r=r, b=b, Time=Time, v=v)
   else
@@ -15,6 +16,7 @@ EscrowedDividend <- function(type=c('call','put'), S, X, b, r, Time, v, d, dT) {
 HaugHaugDividend <- function(type=c('call','put'), S, X, b, r, Time, v, d, dT) {
   warning('BROKEN: do not use!!!')
   # Haug, Haug 1998
+  adj.s <- S - sum(d*exp(-r*dT))
   adj.s <- S-exp(-r*dT)*d
   adj.vol <- v*S/adj.s
   adj.vol <- sqrt(((v^2)*dT + (adj.vol^2)*(Time-dT)) / Time)
@@ -23,6 +25,7 @@ HaugHaugDividend <- function(type=c('call','put'), S, X, b, r, Time, v, d, dT) {
   else
   BlackScholesMerton(type,S=adj.s, X=X, r=r, b=b, Time=Time, v=adj.vol)
 }
+
 ChrissDividend <- function(type=c('call','put'), S, X, b, r, Time, v, d, dT) {
   # Chriss 1997
   adj.s <- S-exp(-r*dT)*d
@@ -32,26 +35,38 @@ ChrissDividend <- function(type=c('call','put'), S, X, b, r, Time, v, d, dT) {
   else
   BlackScholesMerton(type=type,S=adj.s, X=X, r=r, b=b, Time=Time, v=adj.vol)
 }
-BosGairatShepelevaDividend <- function(type=c('call','put'), S, X, b, r, Time, v, d, dT) {
+
+BosGairatShepelevaDividend <- function(type=c('ec','ep'), S, X, b, r, Time, v, d, dT) {
+  d.sum <- sum(d * exp(-r*dT))
   lns <- log(S)
-  lnx <- log( (X+d*exp(-r*dT)) * exp(-r*Time))
+  lnx <- log( (X+d.sum) * exp(-r * Time) )
+  #lnx <- log( (X+d*exp(-r*dT)) * exp(-r*Time))
   z1 <- (lns-lnx) / (v * sqrt(Time))+v*sqrt(Time)/2
-  z2 <- z1 + v * sqrt(Time)/2
-  adj.s <- S - exp(-r*dT)*d
-  adj.vol <- sqrt(v^2 + v*sqrt(pi/(2*Time))*
-             (4*exp(z1^2/2-lns)*d*exp(-r*dT)*
-             (pnorm(z1) - pnorm(z1-v*dT/sqrt(Time))) +
-             exp(z2^2/2-2*lns)*d^2*
-             exp(-r*2*dT)*(pnorm(z2)-pnorm(z2-2*v*dT/sqrt(Time)))))
-  BlackScholesMerton(type,adj.s, X, r, b=b, Time=Time, v=adj.vol)
+  #z2 <- (lns-lnx) / (v * sqrt(Time))+v*sqrt(Time)
+  z2 <- z1 + v * sqrt(Time)
+
+  # for i in 1:n
+  dTi <- rep(dT, each=length(dT))
+  sum1 <- sum(d * exp(-r * dT) * (pnorm(z1) - pnorm(z1-v*dT/sqrt(Time))) )
+  # for i in 1:n; for j in 1:n 
+  dTj <- rep(dT, length(dT))
+  di <- rep(d,each=length(d))
+  dj <- rep(d,length(d))
+  mint <- pmin(dTi,dTj)
+  sum2 <- sum(di*dj * exp(-r*(dTi+dTj)) * (pnorm(z2)-pnorm(z2-2*v*mint)))
+
+  adj.vol <- sqrt(v^2 + v*sqrt(pi/(2*Time)) * (4*exp(z1^2 / 2 - lns) * sum1 + exp(z2^2 / 2 - 2*lns) * sum2))
+  adj.s <- S - sum(d*exp(-r*dT))
+  as.list(c(unlist(BlackScholesMerton(type,adj.s, X, r, b=b, Time=Time, v=adj.vol)),adj.v=adj.vol))
 }
+
 HaugHaugLewisDividend <- function(type=c('ac','ap','ec','ep'),S,X,b,r,Time,v,d,dT) {
   lns <- log(S)
   cp <- ifelse(grepl('c',type), 'c','p')
   american <- ifelse(grepl('a',type), TRUE, FALSE)
   if( !american) {
     exp(-r*dT) * (integrate(function(x) BlackScholesMerton('c',x-d, X,b=b, r, Time-dT,v)$call$value * dlnorm(x,lns+(r-0.5*v^2)*dT,v*sqrt(dT)),d,X+d)$value +
-    integrate(function(x) BlackScholesMerton(cp,x-d, X,b=b, r, Time-dT,sigma)$call$value * dlnorm(x,lns+(r-0.5*v^2)*dT,sigma*sqrt(dT)),X+d,20*S)$value)
+    integrate(function(x) BlackScholesMerton(cp,x-d, X,b=b, r, Time-dT,v)$call$value * dlnorm(x,lns+(r-0.5*v^2)*dT,v*sqrt(dT)),X+d,Inf)$value)
   } else {
     i1 <- function(x) {
             max(x-X, BlackScholesMerton(cp,x-d, X,b=b, r, Time-dT,v)$call$value) * 
@@ -63,6 +78,27 @@ HaugHaugLewisDividend <- function(type=c('ac','ap','ec','ep'),S,X,b,r,Time,v,d,d
           }
     exp(-r*dT) * (integrate(Vectorize(i1), d, X+d)$value+integrate(Vectorize(i2), X+d, 20*S)$value)
   }
+  # notes on doing this for multiple dividends:
+  #  the process should entail evaluating at t, then t-1, t-2, etc. This is
+  #  done by evaluating the integral of the above, n times. HHL suggest
+  #  approximating the params of BSM to get the same value of the option
+  #  at t (t-1, t-2..) and using that as the function to integrate instead,
+  #  thus avoiding n-fold integrals. So far:
+  #
+  #  1) do the above for the first (last!) dividend
+  #  2) adjust the strike - X(adj) = X + d(n) * exp(-r * (dT(n)-Time))
+  #     per ex.
+  #
+  #  > 100 + 4*exp(-0.06*(2.5-3))
+  #   [1] 104.1218
+  #  > 104.1218 + 4*exp(-0.06*(1.5-3))
+  #   [1] 108.4985
+  #  > 108.4985 + 4*exp(-0.06*(.5-3))
+  #   [1] 113.1458
+  #
+  #  3) estimate the v(adj) to arrive at the equal price using BSM
+  #  4) use this as the input for the second iteration of the integral above
+  #     i.e. C(1) = C(BSM) (S, X(adj), v(adj), dT(n-1), Time)
 }
 
 DiscreteDividend <- function(type=c('ec','ep','ac','ap'), S, X, b, r, Time, v, d, dT,
@@ -72,20 +108,22 @@ DiscreteDividend <- function(type=c('ec','ep','ac','ap'), S, X, b, r, Time, v, d
   do.call(method, list(type=type,S=S,X=X,b=b,r=r,Time=Time,v=v,d=d,dT=dT))
 }
 
-BosVandermarkCashDividend <- function(type=c("call","put"),S,X,T,r,b,v,d,dT) {
+BosVandermarkCashDividend <- function(type=c("ec","ep"),S,X,r,b,Time,v,d,dT) {
   # only for european options!
   n <- length(d)
   if(n != length(dT))
     stop(paste(sQuote('d'),"dividends and",sQuote('dT'),"dividend times must",
                "be of equal length")) 
 
-  Xn <- sum( (T-dT) / T * d * exp(-r*dT) )
-  Xf <- sum( dT / T * d * exp(-r*dT) )
+  Xn <- sum( (Time-dT) / Time * d * exp(-r*dT) )
+  Xf <- sum( dT / Time * d * exp(-r*dT) )
 
-  if(match.arg(type)=="call")
-    call.value(S-Xn, X+Xf * exp(r*T), r, r, T, v)$value
+  if(match.arg(type)=="ec")
+    BlackScholesMerton('c',S-Xn,X+Xf * exp(r*Time),r,r,Time,v)$call$value
+    #greeks:::call.value(S-Xn, X+Xf * exp(r*Time), r, r, Time, v)$value
   else
-    put.value(S-Xn, X+Xf * exp(r*T), r, r, T, v)$value
+    BlackScholesMerton('p',S-Xn,X+Xf*exp(r*Time),r,r,Time,v)$put$value
+    #greeks:::put.value(S-Xn, X+Xf * exp(r*Time), r, r, Time, v)$value
 }
 
 

@@ -25,6 +25,7 @@ export(
 
        # dividend models and approximations
        DiscreteDivYield,
+       # DiscreteDivYieldAnalytic,
        BosVandermarkCashDividend,
        EscrowedDividend,   # a.k.a Merton 73
        ChrissDividend,

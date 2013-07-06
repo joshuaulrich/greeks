@@ -13,13 +13,29 @@ EscrowedDividend <- function(type=c('call','put'), S, X, b, r, Time, v, d, dT) {
   else
   BlackScholesMerton(type,S=adj.s, X=X, r=r, b=b, Time=Time, v=v)
 }
-HaugHaugDividend <- function(type=c('call','put'), S, X, b, r, Time, v, d, dT) {
+HHD2 <- function (type = c("call", "put"), S, X, b, r, Time, v, d, dT) 
+{
+    # this isn't really right, but seems ot provide a wickedly good approximation...
+    warning("BROKEN: do not use!!!")
+    adj.s <- S - sum(exp(-r * dT) * d)
+    adj.vol <- v * S/adj.s
+    adj.vol <- sqrt(((v^2) * dT + (adj.vol^2) * (Time - dT))/Time)
+    if (missing(type)) 
+        BlackScholesMerton(, S = adj.s, X = X, r = r, b = b, 
+            Time = Time, v = adj.vol)
+    else BlackScholesMerton(type, S = adj.s, X = X, r = r, b = b, 
+        Time = Time, v = adj.vol)
+}
+
+HaugHaugDividend <- function(type=c('c','p'), S, X, b, r, Time, v, d, dT) {
   warning('BROKEN: do not use!!!')
   # Haug, Haug 1998
   adj.s <- S - sum(d*exp(-r*dT))
-  adj.s <- S-exp(-r*dT)*d
-  adj.vol <- v*S/adj.s
-  adj.vol <- sqrt(((v^2)*dT + (adj.vol^2)*(Time-dT)) / Time)
+  adj.vol <- sqrt((S*v/(S - sum(d*exp(-r*dT))))^2 * (dT)+(v^2)*(Time-dT))
+  #adj.vol <- sqrt(sum((adj.s*v/(adj.s - sum(d*exp(-r*dT))))^2 * (dT)+(v^2)*(Time-dT)))
+  #adj.vol <- adj.vol[length(adj.vol)]
+#  adj.vol <- v*S/adj.s
+#  adj.vol <- sqrt(((v^2)*dT + (adj.vol^2)*(Time-dT)) / Time)
   if(missing(type))
   BlackScholesMerton(,S=adj.s, X=X, r=r, b=b, Time=Time, v=adj.vol)
   else

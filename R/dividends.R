@@ -42,14 +42,15 @@ HaugHaugDividend <- function(type=c('c','p'), S, X, b, r, Time, v, d, dT) {
   BlackScholesMerton(type,S=adj.s, X=X, r=r, b=b, Time=Time, v=adj.vol)
 }
 
-ChrissDividend <- function(type=c('call','put'), S, X, b, r, Time, v, d, dT) {
+ChrissDividend <- function(type=c('ec','ep'), S, X, b, r, Time, v, d, dT) {
   # Chriss 1997
-  adj.s <- S-exp(-r*dT)*d
+  adj.s <- S - (d * exp(-r*dT))
   adj.vol <- v*S/adj.s
   if(missing(type))
   BlackScholesMerton(,S=adj.s, X=X, r=r, b=b, Time=Time, v=adj.vol)
   else
   BlackScholesMerton(type=type,S=adj.s, X=X, r=r, b=b, Time=Time, v=adj.vol)
+  # ChrissDividend(, 100, 70, 0.06, 0.06, 1, 0.3, 7, 0.5)$call$value
 }
 
 BosGairatShepelevaDividend <- function(type=c('ec','ep'), S, X, b, r, Time, v, d, dT) {
@@ -74,6 +75,7 @@ BosGairatShepelevaDividend <- function(type=c('ec','ep'), S, X, b, r, Time, v, d
   adj.vol <- sqrt(v^2 + v*sqrt(pi/(2*Time)) * (4*exp(z1^2 / 2 - lns) * sum1 + exp(z2^2 / 2 - 2*lns) * sum2))
   adj.s <- S - sum(d*exp(-r*dT))
   as.list(c(unlist(BlackScholesMerton(type,adj.s, X, r, b=b, Time=Time, v=adj.vol)),adj.v=adj.vol))
+  # sapply(1:7, function(N) BosGairatShepelevaDividend('c', 100, 100, 0.06, 0.06, N, 0.25, rep(4,N), seq(1,N)-0.5)$call.value)
 }
 
 HaugHaugLewisDividend <- function(type=c('ac','ap','ec','ep'),S,X,b,r,Time,v,d,dT) {
@@ -141,6 +143,8 @@ BosVandermarkCashDividend <- function(type=c("ec","ep"),S,X,r,b,Time,v,d,dT) {
     BlackScholesMerton('p',S-Xn,X+Xf*exp(r*Time),r,r,Time,v)$put$value
     #greeks:::put.value(S-Xn, X+Xf * exp(r*Time), r, r, Time, v)$value
 }
+## ex table 9-6 TCGOPF
+## sapply(1:7, function(N) BosVandermarkCashDividend('ec', 100, 100, 0.06, 0.06, N, 0.25, rep(4,N), seq(1,N)-0.5))
 
 
 BinomialDiscreteDiv <- function(type=c("ac","ap","ec","ep"),S,X,T,r,v,n,d,dT) {
